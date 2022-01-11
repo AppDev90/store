@@ -5,6 +5,7 @@ namespace Store.ApplicationService.Contract
 {
     public interface IUnitOfWork
     {
-        Task SaveChanges();
+        Task<int> SaveChangesAsync();
+
     }
 }
