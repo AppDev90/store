@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="ProductBrands\DataContract\" />
+    <Folder Include="ProductBrands\Dto\" />
+    <Folder Include="ProductBrands\ServiceContract\" />
+    <Folder Include="ProductTypes\Dto\" />
+    <Folder Include="ProductTypes\DataContract\" />
+    <Folder Include="ProductTypes\ServiceContract\" />
+    <Folder Include="Products\Dto\" />
+    <Folder Include="Products\ServiceContract\" />
+    <Folder Include="Products\DataContract\" />
+  </ItemGroup>
+
+</Project>
