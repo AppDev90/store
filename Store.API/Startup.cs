@@ -4,8 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-
 using Microsoft.OpenApi.Models;
+using Store.API.Extention;
+using Store.API.Middleware;
 using Store.ApplicationService.Contract;
 using Store.ApplicationService.ProductService;
 using Store.Core.Products.DataContract;
@@ -34,26 +35,23 @@ namespace Store.API
                 options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
             });
 
-            services.AddScoped<IUnitOfWork, StoreUnitOfWork>();
-            services.AddScoped<IProductRepository, ProductRepository>();
-            services.AddScoped<IProductService, ProductService>();
+            services.AddApplicationServices();
+            services.AddSwaggerDocumentation();
 
-
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Store.API", Version = "v1" });
-            });
         }
 
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseMiddleware<ExceptionMiddleware>();
+
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Store.API v1"));
+                //app.UseDeveloperExceptionPage();
+                app.UseSwaggerDocumention();
             }
+
+            app.UseStatusCodePagesWithReExecute("/error/{0}");
 
             app.UseHttpsRedirection();
 
