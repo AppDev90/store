@@ -11,7 +11,6 @@
     <Folder Include="ProductTypes\Dto\" />
     <Folder Include="ProductTypes\DataContract\" />
     <Folder Include="ProductTypes\ServiceContract\" />
-    <Folder Include="Products\Dto\" />
   </ItemGroup>
 
 </Project>

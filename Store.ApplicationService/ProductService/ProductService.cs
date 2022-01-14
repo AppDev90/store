@@ -1,5 +1,6 @@
 ﻿using Store.ApplicationService.Contract;
 using Store.Core.Products.DataContract;
+using Store.Core.Products.Dto.Query;
 using Store.Core.Products.Entity;
 using Store.Core.Products.ServiceContract;
 using System;
@@ -32,7 +33,7 @@ namespace Store.ApplicationService.ProductService
             return _productRepository.Get(id);
         }
 
-        public async Task<IReadOnlyList<Product>> GetAll()
+        public async Task<IReadOnlyList<ProductsList>> GetAll()
         {
             return await _productRepository.GetAll();
         }
