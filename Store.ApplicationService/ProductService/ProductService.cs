@@ -1,7 +1,9 @@
 ﻿using Store.ApplicationService.Common;
 using Store.ApplicationService.Contract;
 using Store.ApplicationService.Factory;
+using Store.Core.Common.Dto;
 using Store.Core.Products.DataContract;
+using Store.Core.Products.Dto;
 using Store.Core.Products.Dto.Query;
 using Store.Core.Products.Entity;
 using Store.Core.Products.ServiceContract;
@@ -19,7 +21,7 @@ namespace Store.ApplicationService.ProductService
         private readonly IProductRepository _productRepository;
 
         public ProductService(IUnitOfWork storeUnitOfWork, IProductRepository productRepository, ErrorFactory errorFactory)
-            :base(errorFactory)
+            : base(errorFactory)
         {
             _storeUnitOfWork = storeUnitOfWork;
             _productRepository = productRepository;
@@ -36,9 +38,13 @@ namespace Store.ApplicationService.ProductService
             return _productRepository.Get(id);
         }
 
-        public async Task<IReadOnlyList<ProductsList>> GetAll()
+        public async Task<Pagination<ProductsWithDetail>> GetPdoducts(FilterDto filterDto)
         {
-            return await _productRepository.GetAll();
+            var products = await _productRepository.GetProducts(filterDto);
+            var productCount = await _productRepository.GetCount(filterDto);
+
+            return new Pagination<ProductsWithDetail>(filterDto.PageIndex, filterDto.PageSize,
+                productCount, products);
         }
     }
 }

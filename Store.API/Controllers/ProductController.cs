@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Store.Core.Products.Dto;
 using Store.Core.Products.Dto.Query;
 using Store.Core.Products.Entity;
 using Store.Core.Products.ServiceContract;
@@ -18,9 +19,10 @@ namespace Store.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<ProductsList>>> GetProducts()
+        public async Task<ActionResult<IReadOnlyList<ProductsWithDetail>>> GetProducts
+            ([FromQuery]FilterDto filterDto)
         {
-            return Ok(await _productService.GetAll());
+            return Ok(await _productService.GetPdoducts(filterDto));
         }
     }
 }

@@ -1,10 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Store.Core.Products.DataContract;
+using Store.Core.Products.Dto;
 using Store.Core.Products.Dto.Query;
 using Store.Core.Products.Entity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Store.Infrastructure.Data.Products
@@ -30,13 +33,31 @@ namespace Store.Infrastructure.Data.Products
             return _storeDbContext.Products.Find(id);
         }
 
-        public async Task<IReadOnlyList<ProductsList>> GetAll()
+        public async Task<IReadOnlyList<ProductsWithDetail>> GetProducts(FilterDto filterDto)
         {
-            return await _storeDbContext
-                .Products
+            var query = _storeDbContext.Products
+                .Where(p => (!filterDto.BrandId.HasValue || p.ProductBrandId == filterDto.BrandId)
+                         && (!filterDto.TypeId.HasValue || p.ProductTypeId == filterDto.TypeId)
+                         && (string.IsNullOrEmpty(filterDto.ProductName) ||
+                         p.Name.ToLower().Contains(filterDto.ProductName.ToLower()))
+                         )
                 .Include(p => p.ProductBrand)
                 .Include(p => p.ProductType)
-                .Select(p => new ProductsList()
+                .AsSingleQuery();
+
+            query = filterDto.Sort switch
+            {
+                "priceAsc" => query.OrderBy(p => p.Price),
+                "priceDesc" => query.OrderByDescending(p => p.Price),
+                _ => query.OrderBy(p => p.Name),
+            };
+
+            query = query
+                .Skip(filterDto.PageSize * (filterDto.PageIndex - 1))
+                .Take(filterDto.PageSize);
+
+            return await query
+                .Select(p => new ProductsWithDetail()
                 {
                     Id = p.Id,
                     ProductType = p.ProductType.Name,
@@ -51,6 +72,17 @@ namespace Store.Infrastructure.Data.Products
                 })
                 .AsNoTrackingWithIdentityResolution()
                 .ToListAsync();
+        }
+
+        public async Task<int> GetCount(FilterDto filterDto)
+        {
+            return await _storeDbContext.Products
+                .Where(p => (!filterDto.BrandId.HasValue || p.ProductBrandId == filterDto.BrandId)
+                         && (!filterDto.TypeId.HasValue || p.ProductTypeId == filterDto.TypeId)
+                         && (string.IsNullOrEmpty(filterDto.ProductName) || 
+                         p.Name.ToLower().Contains(filterDto.ProductName.ToLower()))
+                         )
+                .CountAsync();
         }
     }
 }

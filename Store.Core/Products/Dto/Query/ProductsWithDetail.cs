@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 
 namespace Store.Core.Products.Dto.Query
 {
-    public class ProductsList
+    public class ProductsWithDetail
     {
         public int Id { get; set; }
         public int ProductTypeId { get; set; }
