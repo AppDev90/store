@@ -31,9 +31,12 @@ namespace Store.API.Middleware
             {
                 await _next(context);
             }
+            catch (ValidationError er)
+            {
+                await SendValidationErrorResponse(context, (int)HttpStatusCode.BadRequest, er.GetMessages().ToArray());
+            }
             catch (Exception ex)
             {
-
                 if (ex is NotFoundError)
                 {
                     await SendErrorResponse(context, (int)HttpStatusCode.NotFound, ex.Message);
@@ -45,10 +48,6 @@ namespace Store.API.Middleware
                 else if (ex is UnKnownError)
                 {
                     await SendErrorResponse(context, (int)HttpStatusCode.BadRequest, ex.Message);
-                }
-                else if (ex is ValidationError)
-                {
-                    await SendValidationErrorResponse(context, (int)HttpStatusCode.BadRequest, ex.Message);
                 }
                 else
                 {
@@ -72,14 +71,14 @@ namespace Store.API.Middleware
             await context.Response.WriteAsync(jsonResponse);
         }
 
-        private async Task SendValidationErrorResponse(HttpContext context, int statusCode, string message)
+        private async Task SendValidationErrorResponse(HttpContext context, int statusCode, string[] message)
         {
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = statusCode;
 
             var response = new ValidationResponse()
             {
-                Errors = new[] { message }
+                Errors = message
             };
 
             var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };

@@ -5,7 +5,8 @@ namespace Store.ApplicationService.Error
 {
     public class NotFoundError : Exception
     {
-        public NotFoundError(string message) : base(message)
+        
+        public NotFoundError(string entity) : base(entity + " not Found")
         {
 
         }

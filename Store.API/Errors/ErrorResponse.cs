@@ -7,7 +7,9 @@ namespace Store.API.Errors
         public ErrorResponse(int statusCode, string message = null)
         {
             StatusCode = statusCode;
-            Message = message ?? GetDefaultMessageForStatusCode(statusCode);
+            Message = string.IsNullOrEmpty(message)
+                ? GetDefaultMessageForStatusCode(statusCode)
+                : message;
         }
 
 
