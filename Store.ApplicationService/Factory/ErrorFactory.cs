@@ -8,9 +8,9 @@ namespace Store.ApplicationService.Factory
     public abstract class ErrorFactory
     {
 
-        public abstract NotFoundError MakeNotFoundError();
-        public abstract UnKnownError MakeUnKnownError();
-        public abstract NotAuthorizedError MakeNotAuthorizedError();
+        public abstract SingleError MakeNotFoundError();
+        public abstract SingleError MakeUnKnownError();
+        public abstract SingleError MakeNotAuthorizedError();
 
         public abstract MultipleErrors MakeValidationErrors();
 

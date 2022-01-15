@@ -7,17 +7,17 @@ namespace Store.ApplicationService.FactoryImplementation
 {
     public class ErrorFactoryImplementation : ErrorFactory
     {
-        public override NotAuthorizedError MakeNotAuthorizedError()
+        public override SingleError MakeNotAuthorizedError()
         {
             return new NotAuthorizedError();
         }
 
-        public override NotFoundError MakeNotFoundError()
+        public override SingleError MakeNotFoundError()
         {
             return new NotFoundError();
         }
 
-        public override UnKnownError MakeUnKnownError()
+        public override SingleError MakeUnKnownError()
         {
             return new UnKnownError();
         }

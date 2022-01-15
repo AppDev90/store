@@ -38,8 +38,6 @@ namespace Store.ApplicationService.ProductService
 
         public async Task<IReadOnlyList<ProductsList>> GetAll()
         {
-            ValidationError.AddError("error 1");
-            ValidationError.Throw();
             return await _productRepository.GetAll();
         }
     }

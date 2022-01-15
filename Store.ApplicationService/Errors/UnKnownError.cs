@@ -6,7 +6,8 @@ namespace Store.ApplicationService.Errors
     {
         public override void Throw(string error)
         {
-            base.Throw(error);
+            _error = error;
+            throw this;
         }
     }
 }

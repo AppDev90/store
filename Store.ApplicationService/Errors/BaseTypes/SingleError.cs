@@ -4,12 +4,9 @@ namespace Store.ApplicationService.Errors.BaseTypes
 {
     public abstract class SingleError : Exception
     {
-        private string _error;
-        public virtual void Throw(string error)
-        {
-            _error = error;
-            throw this;
-        }
+        protected string _error;
+
+        public abstract void Throw(string error);
 
         public string GetError()
         {

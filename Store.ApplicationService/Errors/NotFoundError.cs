@@ -7,7 +7,8 @@ namespace Store.ApplicationService.Errors
     {
         public override void Throw(string entity)
         {
-            base.Throw($"{entity} not Found.");  
+            _error = $"{entity} not Found.";
+            throw this;
         }
     }
 }

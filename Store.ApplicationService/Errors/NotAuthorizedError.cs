@@ -5,9 +5,10 @@ namespace Store.ApplicationService.Errors
 {
     public class NotAuthorizedError : SingleError
     {
-        public override void Throw(string error = "")
+        public override void Throw(string error)
         {
-            base.Throw(error);
+            _error = error;
+            throw this;
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿
-using Store.ApplicationService.Errors;
 using Store.ApplicationService.Errors.BaseTypes;
 using Store.ApplicationService.Factory;
 
@@ -7,9 +6,9 @@ namespace Store.ApplicationService.Common
 {
     public abstract class BaseService
     {
-        protected readonly NotFoundError NotFoundError;
-        protected readonly NotAuthorizedError NotAuthorized;
-        protected readonly UnKnownError UnKnownError;
+        protected readonly SingleError NotFoundError;
+        protected readonly SingleError NotAuthorized;
+        protected readonly SingleError UnKnownError;
         
         protected readonly MultipleErrors ValidationError;
 
