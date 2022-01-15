@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Store.API.Errors;
-using Store.ApplicationService.Error;
+using Store.ApplicationService.Errors;
+using Store.ApplicationService.Errors.BaseTypes;
 using System;
 using System.Net;
 using System.Text.Json;
@@ -31,56 +32,59 @@ namespace Store.API.Middleware
             {
                 await _next(context);
             }
-            catch (ValidationError er)
+            catch (MultipleErrors er)
             {
-                await SendValidationErrorResponse(context, (int)HttpStatusCode.BadRequest, er.GetMessages().ToArray());
+                if (er is ValidationErrors)
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                }
+
+                await SendMultipleErrorResponse(context, er.GetErrors().ToArray());
+            }
+            catch (SingleError er)
+            {
+                if (er is NotFoundError)
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                }
+                else if (er is NotAuthorizedError)
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                }
+                else if (er is UnKnownError)
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                }
+
+                await SendSingleErrorResponse(context, (int)HttpStatusCode.NotFound, er.GetError());
             }
             catch (Exception ex)
             {
-                if (ex is NotFoundError)
-                {
-                    await SendErrorResponse(context, (int)HttpStatusCode.NotFound, ex.Message);
-                }
-                else if (ex is NotAuthorizedError)
-                {
-                    await SendErrorResponse(context, (int)HttpStatusCode.Unauthorized, ex.Message);
-                }
-                else if (ex is UnKnownError)
-                {
-                    await SendErrorResponse(context, (int)HttpStatusCode.BadRequest, ex.Message);
-                }
-                else
-                {
-                    _logger.LogError(ex, ex.Message);
-                    await SendExceptionResponse(context, ex);
-                }
+                _logger.LogError(ex, ex.Message);
+                await SendExceptionResponse(context, ex);
             }
 
         }
 
-        private async Task SendErrorResponse(HttpContext context, int statusCode, string message)
+        private async Task SendSingleErrorResponse(HttpContext context, int statusCode, string message)
         {
             context.Response.ContentType = "application/json";
-            context.Response.StatusCode = statusCode;
 
-            var response = new ErrorResponse(statusCode, message);
-
+            var response = new ErrorResponse(context.Response.StatusCode, message);
             var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
             var jsonResponse = JsonSerializer.Serialize(response, options);
 
             await context.Response.WriteAsync(jsonResponse);
         }
 
-        private async Task SendValidationErrorResponse(HttpContext context, int statusCode, string[] message)
+        private async Task SendMultipleErrorResponse(HttpContext context, string[] message)
         {
             context.Response.ContentType = "application/json";
-            context.Response.StatusCode = statusCode;
 
-            var response = new ValidationResponse()
+            var response = new MultipleErrorResponse()
             {
                 Errors = message
             };
-
             var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
             var jsonResponse = JsonSerializer.Serialize(response, options);
 
@@ -95,7 +99,6 @@ namespace Store.API.Middleware
             var response = _env.IsDevelopment()
                 ? new ExceptionResponse((int)HttpStatusCode.InternalServerError, ex.Message, ex.StackTrace.ToString())
                 : new ExceptionResponse((int)HttpStatusCode.InternalServerError, ex.Message, ex.StackTrace.ToString());
-
             var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
             var jsonResponse = JsonSerializer.Serialize(response, options);
 

@@ -1,4 +1,6 @@
-﻿using Store.ApplicationService.Contract;
+﻿using Store.ApplicationService.Common;
+using Store.ApplicationService.Contract;
+using Store.ApplicationService.Factory;
 using Store.Core.Products.DataContract;
 using Store.Core.Products.Dto.Query;
 using Store.Core.Products.Entity;
@@ -11,12 +13,13 @@ using System.Threading.Tasks;
 
 namespace Store.ApplicationService.ProductService
 {
-    public class ProductService : IProductService
+    public class ProductService : BaseService, IProductService
     {
         private readonly IUnitOfWork _storeUnitOfWork;
         private readonly IProductRepository _productRepository;
 
-        public ProductService(IUnitOfWork storeUnitOfWork, IProductRepository productRepository)
+        public ProductService(IUnitOfWork storeUnitOfWork, IProductRepository productRepository, ErrorFactory errorFactory)
+            :base(errorFactory)
         {
             _storeUnitOfWork = storeUnitOfWork;
             _productRepository = productRepository;
@@ -35,6 +38,8 @@ namespace Store.ApplicationService.ProductService
 
         public async Task<IReadOnlyList<ProductsList>> GetAll()
         {
+            ValidationError.AddError("error 1");
+            ValidationError.Throw();
             return await _productRepository.GetAll();
         }
     }
