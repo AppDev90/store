@@ -9,6 +9,7 @@ namespace Store.Core.Products.DataContract
     public interface IProductRepository
     {
         Product Get(int id);
+        Task<ProductsWithDetail> GetWithDetail(int id);
         Task<IReadOnlyList<ProductsWithDetail>> GetProducts(FilterDto filterDto);
         Task<int> GetCount(FilterDto filterDto);
         void Add(Product product);

@@ -16,7 +16,7 @@ namespace Store.Core.Products.Dto
         public int? BrandId { get; set; }
         public int? TypeId { get; set; }
 
-        public string ProductName { get; set; }
+        public string Search { get; set; }
 
 
     }

@@ -4,11 +4,19 @@ using Store.API.Errors;
 using Store.ApplicationService.Contract;
 using Store.ApplicationService.Factory;
 using Store.ApplicationService.FactoryImplementation;
+using Store.ApplicationService.ProductBrandService;
 using Store.ApplicationService.ProductService;
+using Store.ApplicationService.ProductTypeService;
+using Store.Core.ProductBrands.DataContract;
+using Store.Core.ProductBrands.ServiceContract;
 using Store.Core.Products.DataContract;
 using Store.Core.Products.ServiceContract;
+using Store.Core.ProductTypes.DataContract;
+using Store.Core.ProductTypes.ServiceContract;
 using Store.Infrastructure.Data;
+using Store.Infrastructure.Data.ProductBrands;
 using Store.Infrastructure.Data.Products;
+using Store.Infrastructure.Data.ProductTypes;
 using System.Linq;
 
 namespace Store.API.Extention
@@ -20,6 +28,10 @@ namespace Store.API.Extention
             services.AddScoped<IUnitOfWork, StoreUnitOfWork>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IProductTypeRepository, ProductTypeRepository>();
+            services.AddScoped<IProductTypeService, ProductTypeService>();
+            services.AddScoped<IProductBrandRepository, ProductBrandsRepository>();
+            services.AddScoped<IProductBrandService, ProductBrandService>();
             services.AddScoped<ErrorFactory, ErrorFactoryImplementation>();
 
             services.Configure<ApiBehaviorOptions>(options =>

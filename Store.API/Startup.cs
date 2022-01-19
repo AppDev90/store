@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Store.API.Extention;
@@ -13,6 +14,7 @@ using Store.Core.Products.DataContract;
 using Store.Core.Products.ServiceContract;
 using Store.Infrastructure.Data;
 using Store.Infrastructure.Data.Products;
+using System.IO;
 
 namespace Store.API
 {
@@ -43,7 +45,7 @@ namespace Store.API
                 opt.AddPolicy("CorsPolicy", policy =>
                  {
                      policy.AllowAnyHeader().AllowAnyMethod()
-                     .WithOrigins("https://localhost:5200");
+                     .WithOrigins("https://localhost:4200");
                  });
             });
         }
@@ -64,6 +66,14 @@ namespace Store.API
             app.UseHttpsRedirection();
 
             app.UseRouting();
+			
+			app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(Directory.GetCurrentDirectory(), "Content")
+                ), RequestPath = "/content"
+            });
 
             app.UseCors("CorsPolicy");
 

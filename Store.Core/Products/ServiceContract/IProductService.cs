@@ -10,6 +10,7 @@ namespace Store.Core.Products.ServiceContract
     public interface IProductService
     {
         Product Get(int id);
+        Task<ProductsWithDetail> GetWithDetail(int id);
         Task<Pagination<ProductsWithDetail>> GetPdoducts(FilterDto filterDto);
         void Add(Product product);
     }

@@ -4,6 +4,7 @@ using Store.Core.Products.DataContract;
 using Store.Core.Products.Dto;
 using Store.Core.Products.Dto.Query;
 using Store.Core.Products.Entity;
+using Store.Infrastructure.Data.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,34 +13,33 @@ using System.Threading.Tasks;
 
 namespace Store.Infrastructure.Data.Products
 {
-    public class ProductRepository : IProductRepository
+    public class ProductRepository : BaseStoreRepository, IProductRepository
     {
-        private readonly StoreDbContext _storeDbContext;
         private readonly IConfiguration _configuration;
 
         public ProductRepository(StoreDbContext storeDbContext, IConfiguration configuration)
+            : base(storeDbContext)
         {
-            _storeDbContext = storeDbContext;
             _configuration = configuration;
         }
 
         public void Add(Product product)
         {
-            _storeDbContext.Products.Add(product);
+            StoreDbContext.Products.Add(product);
         }
 
         public Product Get(int id)
         {
-            return _storeDbContext.Products.Find(id);
+            return StoreDbContext.Products.Find(id);
         }
 
         public async Task<IReadOnlyList<ProductsWithDetail>> GetProducts(FilterDto filterDto)
         {
-            var query = _storeDbContext.Products
+            var query = StoreDbContext.Products
                 .Where(p => (!filterDto.BrandId.HasValue || p.ProductBrandId == filterDto.BrandId)
                          && (!filterDto.TypeId.HasValue || p.ProductTypeId == filterDto.TypeId)
-                         && (string.IsNullOrEmpty(filterDto.ProductName) ||
-                         p.Name.ToLower().Contains(filterDto.ProductName.ToLower()))
+                         && (string.IsNullOrEmpty(filterDto.Search) ||
+                         p.Name.ToLower().Contains(filterDto.Search.ToLower()))
                          )
                 .Include(p => p.ProductBrand)
                 .Include(p => p.ProductType)
@@ -65,7 +65,7 @@ namespace Store.Infrastructure.Data.Products
                     ProductBrand = p.ProductBrand.Name,
                     Description = p.Description,
                     PictureUrl = string.IsNullOrEmpty(p.PictureUrl) ?
-                    "" : _configuration["ApiUrl"] + p.PictureUrl,
+                    "" : _configuration["ApiUrl"] + "content/" + p.PictureUrl,
                     Price = p.Price,
                     ProductBrandId = p.ProductBrandId,
                     ProductTypeId = p.ProductTypeId
@@ -76,13 +76,35 @@ namespace Store.Infrastructure.Data.Products
 
         public async Task<int> GetCount(FilterDto filterDto)
         {
-            return await _storeDbContext.Products
+            return await StoreDbContext.Products
                 .Where(p => (!filterDto.BrandId.HasValue || p.ProductBrandId == filterDto.BrandId)
                          && (!filterDto.TypeId.HasValue || p.ProductTypeId == filterDto.TypeId)
-                         && (string.IsNullOrEmpty(filterDto.ProductName) || 
-                         p.Name.ToLower().Contains(filterDto.ProductName.ToLower()))
+                         && (string.IsNullOrEmpty(filterDto.Search) ||
+                         p.Name.ToLower().Contains(filterDto.Search.ToLower()))
                          )
                 .CountAsync();
+        }
+
+        public async Task<ProductsWithDetail> GetWithDetail(int id)
+        {
+            return await StoreDbContext.Products
+                 .Where(p => p.Id == id)
+                 .Include(p => p.ProductBrand)
+                 .Include(p => p.ProductType)
+                 .Select(p => new ProductsWithDetail()
+                 {
+                     Id = p.Id,
+                     ProductType = p.ProductType.Name,
+                     Name = p.Name,
+                     ProductBrand = p.ProductBrand.Name,
+                     Description = p.Description,
+                     PictureUrl = string.IsNullOrEmpty(p.PictureUrl) ?
+                     "" : _configuration["ApiUrl"] + "content/" + p.PictureUrl,
+                     Price = p.Price,
+                     ProductBrandId = p.ProductBrandId,
+                     ProductTypeId = p.ProductTypeId
+                 })
+                 .SingleOrDefaultAsync();
         }
     }
 }

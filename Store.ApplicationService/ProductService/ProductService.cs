@@ -46,5 +46,13 @@ namespace Store.ApplicationService.ProductService
             return new Pagination<ProductsWithDetail>(filterDto.PageIndex, filterDto.PageSize,
                 productCount, products);
         }
+
+        public async Task<ProductsWithDetail> GetWithDetail(int id)
+        {
+            var product = await _productRepository.GetWithDetail(id);
+            if (product == null)
+                NotFoundError.Throw("Product");
+            return product;
+        }
     }
 }
