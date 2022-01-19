@@ -65,7 +65,7 @@ namespace Store.Infrastructure.Data.Products
                     ProductBrand = p.ProductBrand.Name,
                     Description = p.Description,
                     PictureUrl = string.IsNullOrEmpty(p.PictureUrl) ?
-                    "" : _configuration["ApiUrl"] + "content/" + p.PictureUrl,
+                    "" : _configuration["ImageUrl"] + p.PictureUrl,
                     Price = p.Price,
                     ProductBrandId = p.ProductBrandId,
                     ProductTypeId = p.ProductTypeId
@@ -99,7 +99,7 @@ namespace Store.Infrastructure.Data.Products
                      ProductBrand = p.ProductBrand.Name,
                      Description = p.Description,
                      PictureUrl = string.IsNullOrEmpty(p.PictureUrl) ?
-                     "" : _configuration["ApiUrl"] + "content/" + p.PictureUrl,
+                     "" : _configuration["ImageUrl"] + p.PictureUrl,
                      Price = p.Price,
                      ProductBrandId = p.ProductBrandId,
                      ProductTypeId = p.ProductTypeId
