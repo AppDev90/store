@@ -18,6 +18,7 @@ using Store.Infrastructure.Data.ProductBrands;
 using Store.Infrastructure.Data.Products;
 using Store.Infrastructure.Data.ProductTypes;
 using System.Linq;
+using Store.ApplicationService.ErrorsForTest;
 
 namespace Store.API.Extention
 {
@@ -33,6 +34,7 @@ namespace Store.API.Extention
             services.AddScoped<IProductBrandRepository, ProductBrandsRepository>();
             services.AddScoped<IProductBrandService, ProductBrandService>();
             services.AddScoped<ErrorFactory, ErrorFactoryImplementation>();
+            services.AddScoped<IErrors, Store.ApplicationService.ErrorsForTest.Errors>();
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
