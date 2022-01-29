@@ -36,11 +36,7 @@ namespace Store.Infrastructure.Data.Products
         public async Task<IReadOnlyList<ProductsWithDetail>> GetProducts(FilterDto filterDto)
         {
             var query = StoreDbContext.Products
-                .Where(p => (!filterDto.BrandId.HasValue || p.ProductBrandId == filterDto.BrandId)
-                         && (!filterDto.TypeId.HasValue || p.ProductTypeId == filterDto.TypeId)
-                         && (string.IsNullOrEmpty(filterDto.Search) ||
-                         p.Name.ToLower().Contains(filterDto.Search.ToLower()))
-                         )
+                .Where(GetWhereStatmentForFilter(filterDto))
                 .Include(p => p.ProductBrand)
                 .Include(p => p.ProductType)
                 .AsSingleQuery();
@@ -77,12 +73,17 @@ namespace Store.Infrastructure.Data.Products
         public async Task<int> GetCount(FilterDto filterDto)
         {
             return await StoreDbContext.Products
-                .Where(p => (!filterDto.BrandId.HasValue || p.ProductBrandId == filterDto.BrandId)
+                .Where(GetWhereStatmentForFilter(filterDto))
+                .CountAsync();
+        }
+
+        private Expression<Func<Product, bool>> GetWhereStatmentForFilter(FilterDto filterDto)
+        {
+            return (p => (!filterDto.BrandId.HasValue || p.ProductBrandId == filterDto.BrandId)
                          && (!filterDto.TypeId.HasValue || p.ProductTypeId == filterDto.TypeId)
                          && (string.IsNullOrEmpty(filterDto.Search) ||
                          p.Name.ToLower().Contains(filterDto.Search.ToLower()))
-                         )
-                .CountAsync();
+                         );
         }
 
         public async Task<ProductsWithDetail> GetWithDetail(int id)

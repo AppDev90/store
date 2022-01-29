@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using StackExchange.Redis;
 using Store.API.Extention;
 using Store.API.Middleware;
 using Store.Infrastructure.Data;
@@ -29,6 +30,13 @@ namespace Store.API
             services.AddDbContext<StoreDbContext>(options =>
             {
                 options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
+            });
+
+            services.AddSingleton<IConnectionMultiplexer>(c =>
+            {
+                var configuration = ConfigurationOptions.Parse(_configuration
+                    .GetConnectionString("Redis"), true);
+                return ConnectionMultiplexer.Connect(configuration);
             });
 
             services.AddApplicationServices();
@@ -60,13 +68,14 @@ namespace Store.API
             app.UseHttpsRedirection();
 
             app.UseRouting();
-			
-			app.UseStaticFiles();
+
+            app.UseStaticFiles();
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(
                     Path.Combine(Directory.GetCurrentDirectory(), "Content")
-                ), RequestPath = "/content"
+                ),
+                RequestPath = "/content"
             });
 
             app.UseCors("CorsPolicy");

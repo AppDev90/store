@@ -19,6 +19,10 @@ using Store.Infrastructure.Data.Products;
 using Store.Infrastructure.Data.ProductTypes;
 using System.Linq;
 using Store.ApplicationService.ErrorsForTest;
+using Store.Core.Baskets.Data;
+using Store.Infrastructure.DataBasket;
+using Store.ApplicationService.BasketService;
+using Store.Core.Baskets.ServiceContract;
 
 namespace Store.API.Extention
 {
@@ -34,7 +38,10 @@ namespace Store.API.Extention
             services.AddScoped<IProductBrandRepository, ProductBrandsRepository>();
             services.AddScoped<IProductBrandService, ProductBrandService>();
             services.AddScoped<ErrorFactory, ErrorFactoryImplementation>();
-            services.AddScoped<IErrors, Store.ApplicationService.ErrorsForTest.Errors>();
+            services.AddScoped<IErrors, ApplicationService.ErrorsForTest.Errors>();
+            services.AddScoped<IBasketRepository, BasketRepository>();
+            services.AddScoped<IBasketService, BasketService>();
+
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
