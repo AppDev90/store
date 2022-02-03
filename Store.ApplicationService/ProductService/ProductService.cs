@@ -7,9 +7,6 @@ using Store.Core.Products.Dto;
 using Store.Core.Products.Dto.Query;
 using Store.Core.Products.Entity;
 using Store.Core.Products.ServiceContract;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 using System.Threading.Tasks;
 

@@ -9,6 +9,7 @@ using StackExchange.Redis;
 using Store.API.Extention;
 using Store.API.Middleware;
 using Store.Infrastructure.Data;
+using Store.Infrastructure.DataIdentity;
 using System.IO;
 
 namespace Store.API
@@ -31,6 +32,10 @@ namespace Store.API
             {
                 options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
             });
+            services.AddDbContext<AppIdentityDbContext>(options =>
+            {
+                options.UseSqlServer(_configuration.GetConnectionString("IdentityConnection"));
+            });
 
             services.AddSingleton<IConnectionMultiplexer>(c =>
             {
@@ -40,6 +45,7 @@ namespace Store.API
             });
 
             services.AddApplicationServices();
+            services.AddIdentityServices(_configuration);
             services.AddSwaggerDocumentation();
 
             services.AddCors(opt =>
@@ -79,7 +85,8 @@ namespace Store.API
             });
 
             app.UseCors("CorsPolicy");
-
+            
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

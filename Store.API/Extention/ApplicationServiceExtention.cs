@@ -23,6 +23,11 @@ using Store.Core.Baskets.Data;
 using Store.Infrastructure.DataBasket;
 using Store.ApplicationService.BasketService;
 using Store.Core.Baskets.ServiceContract;
+using Store.Core.Identity.Users.ServiceContract;
+using Store.ApplicationService.IdentityService.User;
+using Store.ApplicationService.TokensService;
+using Microsoft.AspNetCore.Http;
+using Store.ApplicationService.AuthenticationsService;
 
 namespace Store.API.Extention
 {
@@ -41,7 +46,11 @@ namespace Store.API.Extention
             services.AddScoped<IErrors, ApplicationService.ErrorsForTest.Errors>();
             services.AddScoped<IBasketRepository, BasketRepository>();
             services.AddScoped<IBasketService, BasketService>();
+            services.AddScoped<IAccountService, AccountService>();
 
+            services.AddHttpContextAccessor();
+            services.AddScoped<IClaimService, ClaimService>();
+            services.AddScoped<ITokenService, TokenService>();
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
