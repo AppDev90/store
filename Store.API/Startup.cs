@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using StackExchange.Redis;
 using Store.API.Extention;
 using Store.API.Middleware;
+using Store.ApplicationService.Helper;
 using Store.Infrastructure.Data;
 using Store.Infrastructure.DataIdentity;
 using System.IO;
@@ -44,6 +45,7 @@ namespace Store.API
                 return ConnectionMultiplexer.Connect(configuration);
             });
 
+            services.AddAutoMapper(typeof(MappingProfiles));
             services.AddApplicationServices();
             services.AddIdentityServices(_configuration);
             services.AddSwaggerDocumentation();

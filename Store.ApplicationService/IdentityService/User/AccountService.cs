@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Store.ApplicationService.Common;
 using Store.ApplicationService.Contract;
 using Store.ApplicationService.Factory;
@@ -17,15 +18,17 @@ namespace Store.ApplicationService.IdentityService.User
         private readonly SignInManager<AppUser> _signInManager;
         private readonly ITokenService _tokenService;
         private readonly IClaimService _claimService;
+        private readonly IMapper _mapper;
 
         public AccountService(UserManager<AppUser> userManager,
-            SignInManager<AppUser> signInManager, ITokenService tokenService, IClaimService claimService, ErrorFactory errorFactory)
+            SignInManager<AppUser> signInManager, ITokenService tokenService, IClaimService claimService, IMapper mapper, ErrorFactory errorFactory)
             : base(errorFactory)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenService = tokenService;
             _claimService = claimService;
+            _mapper = mapper;
         }
 
         public async Task<AuthenticatedUserDto> LoginAsync(LoginDto loginDto)
@@ -95,7 +98,7 @@ namespace Store.ApplicationService.IdentityService.User
 
             var user = await _userManager.FindUerByEmailIncludingAddress(email);
 
-            return CreateAddressDto(user.Address);
+            return MappToAddressDto(user.Address);
         }
 
         public async Task<AddressDto> UpdateAddress(AddressDto addressDto)
@@ -104,19 +107,14 @@ namespace Store.ApplicationService.IdentityService.User
 
             var user = await _userManager.FindUerByEmailIncludingAddress(email);
 
-            user.Address.City = addressDto.City;
-            user.Address.FirstName = addressDto.FirstName;
-            user.Address.LastName = addressDto.LastName;
-            user.Address.State = addressDto.State;
-            user.Address.Street = addressDto.Street;
-            user.Address.Zipcode = addressDto.Zipcode;
+            user.Address = MappToAddress(addressDto);
 
             var result = await _userManager.UpdateAsync(user);
 
             if (!result.Succeeded)
                 UnKnownError.Throw("problem in updating user.");
 
-            return CreateAddressDto(user.Address);
+            return MappToAddressDto(user.Address);
         }
 
         private AuthenticatedUserDto CreateAuthenticatedUser(AppUser user)
@@ -129,17 +127,14 @@ namespace Store.ApplicationService.IdentityService.User
             };
         }
 
-        private static AddressDto CreateAddressDto(Address address)
+        private AddressDto MappToAddressDto(Address address)
         {
-            return new AddressDto()
-            {
-                City = address.City,
-                FirstName = address.FirstName,
-                LastName = address.LastName,
-                State = address.State,
-                Street = address.Street,
-                Zipcode = address.Zipcode
-            };
+            return _mapper.Map<AddressDto>(address);
+        }
+
+        private Address MappToAddress(AddressDto addressDto)
+        {
+            return _mapper.Map<Address>(addressDto);
         }
 
     }

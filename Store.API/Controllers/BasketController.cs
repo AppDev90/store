@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Store.Core.Baskets.Dto;
 using Store.Core.Baskets.ServiceContract;
 using Store.Core.CustomerBaskets.Entity;
 using System.Threading.Tasks;
@@ -15,15 +16,15 @@ namespace Store.API.Controllers
         }
 
         [HttpPost("Create")]
-        public async Task<ActionResult<Basket>> CreateBasket(Basket basket)
+        public async Task<ActionResult<Basket>> CreateBasket(BasketDto basketDto)
         {
-            return Ok(await _basketService.CreateBasket(basket));
+            return Ok(await _basketService.CreateBasket(basketDto));
         }
 
         [HttpPost("Update")]
-        public async Task<ActionResult<Basket>> UpdateBasket(Basket basket)
+        public async Task<ActionResult<Basket>> UpdateBasket(BasketDto basketDto)
         {
-            return Ok(await _basketService.UpdateBasket(basket));
+            return Ok(await _basketService.UpdateBasket(basketDto));
         }
 
         [HttpGet]
